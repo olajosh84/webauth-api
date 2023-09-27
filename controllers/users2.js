@@ -1,7 +1,6 @@
 import UserModel from "../models/users.js";
 import asyncHandler from "../middlewares/asyncHandler.js";
 import createCookies from "../utils/createCookies.js";
-import createToken from "../utils/createToken.js";
 
 /*export const fetchUsers = asyncHandler ( async (req, res) => {
     const users = await UserModel.find({});
@@ -26,9 +25,8 @@ export const updateProfile = asyncHandler ( async (req, res) => {
     }
     const user = await UserModel.findByIdAndUpdate({_id: userId}, {firstName, lastName, userAvatar: sentAvatar}, { new: true, runValidators: true});
     /**create a cookie with the token */
-    //createCookies(res, user._id, user.email, user.username, user.confirmed, true, user?.firstName, user?.lastName, user?.userAvatar);
-    const token = createToken(user._id, user.email, user.username, user.confirmed, true, user?.firstName, user?.lastName, user?.userAvatar);
-    res.status(200).json({token, message: "Update successful"});
+    createCookies(res, user._id, user.email, user.username, user.confirmed, true, user?.firstName, user?.lastName, user?.userAvatar);
+    res.status(200).json({message: "Update successful"});
 })
 
 /*export const deleteUser = asyncHandler ( async (req, res) => {

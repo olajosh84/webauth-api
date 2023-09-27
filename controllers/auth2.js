@@ -5,7 +5,6 @@ import bcrypt from "bcryptjs";
 import OTPGenerator from "otp-generator";
 import sendEmailHandler from "../utils/sendEmailHandler.js";
 import createCookies from "../utils/createCookies.js";
-import createToken from "../utils/createToken.js";
 
 /**register function */
 export const signUp = asyncHandler(async (req, res) => {
@@ -51,16 +50,9 @@ export const signUp = asyncHandler(async (req, res) => {
     sendEmailHandler(email, otp); //send mail to newly registered user
     /**save user info */
     const user = await UserModel.create({email, username, password});
-   
-    /**create cookies-USE THIS FOR PRODUCTION */
-    //createCookies(res, user._id, user.email, user.username, user.confirmed, false); 
-    
-    /**PS: I decided to use this because on the free hosting(render.com) that
-     * I deployed this app on, cookies CANNOT be sent to the client. So the the 
-     * cookie is manually created on the client side with react-cookie
-     */
-    const token = createToken(user._id, user.email, user.username, user.confirmed, false);
-    res.status(200).json({token, message: "Registration successful"});
+    /**create cookies */
+    createCookies(res, user._id, user.email, user.username, user.confirmed, false);
+    res.status(200).json({message: "Registration successful"});
 });
 
 /**login function */
@@ -85,15 +77,13 @@ export const signIn = asyncHandler( async (req, res) => {
     /**checking if the user is confirmed even if he exists in the database i.e he is registered */
     if(!user.confirmed){
         /**create a cookie with the token */
-        //createCookies(res, user._id, user.email, user.username, user.confirmed, false);
-        const token = createToken(user._id, user.email, user.username, user.confirmed, false);
-        res.status(401).json({token, message: "You have yet to confirm your email"});
+        createCookies(res, user._id, user.email, user.username, user.confirmed, false);
+        res.status(401).json({message: "You have yet to confirm your email"});
         return;
     }
     /**create a cookie with the token */
-    const token = createToken(user._id, user.email, user.username, user.confirmed, true, user?.firstName, user?.lastName, user?.userAvatar);
-    //createCookies(res, user._id, user.email, user.username, user.confirmed, true, user?.firstName, user?.lastName, user?.userAvatar);
-    res.status(200).json({token, message: "Login successful"});
+    createCookies(res, user._id, user.email, user.username, user.confirmed, true, user?.firstName, user?.lastName, user?.userAvatar);
+    res.status(200).json({message: "Login successful"});
 })
 
 /**logout function */
@@ -211,9 +201,8 @@ export const confirmUser = asyncHandler ( async (req, res) => {
         }
     }
     const user = await UserModel.findOneAndUpdate({email: userEmail}, {confirmed: true});
-    //createCookies(res, user._id, user.email, user.username, user.confirmed, false);
-    const token = createToken(user._id, user.email, user.username, user.confirmed, false);
-    res.status(200).json({token, success: "true"});
+    createCookies(res, user._id, user.email, user.username, user.confirmed, false);
+    res.status(200).json({success: "true"});
 })
 
 /**Authenticate user */

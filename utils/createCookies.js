@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 
 const expiryDate = new Date();
-expiryDate.setDate(expiryDate.getDate() + 1);
+expiryDate.setDate(expiryDate.getDate() + 7);
 
 const createCookies =  (res, userId, email, username, confirmed, isLoggedIn, firstName="", lastName="", userAvatar="" ) => {
     try {
