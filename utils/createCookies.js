@@ -5,7 +5,7 @@ expiryDate.setDate(expiryDate.getDate() + 1);
 
 const createCookies =  (res, userId, email, username, confirmed, isLoggedIn, firstName="", lastName="", userAvatar="" ) => {
     try {
-        const token = jwt.sign({userId, email, username, confirmed, isLoggedIn, firstName, lastName, userAvatar}, process.env.JWT_SECRET, {expiresIn: '1h'});
+        const token = jwt.sign({userId, email, username, confirmed, isLoggedIn, firstName, lastName, userAvatar}, process.env.JWT_SECRET, {expiresIn: process.env.JWT_EXPIRY});
         res.cookie('token', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
